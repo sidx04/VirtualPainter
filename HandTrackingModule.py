@@ -39,5 +39,5 @@ class handDetector():
                     cv2.circle(img, (cx, cy), 15, (255, 255, 0), cv2.FILLED)
         return lmlist
 
-
+# print()
 
