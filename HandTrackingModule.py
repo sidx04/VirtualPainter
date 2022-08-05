@@ -1,5 +1,5 @@
 from unittest import result
-
+import numpy as np
 import cv2
 import mediapipe as mp
 import time
@@ -11,6 +11,7 @@ class handDetector():
         self.maxHands = maxHands
         self.detectionCon = detectionCon
         self.trackCon = trackCon
+
         self.mpHands = mp.solutions.hands
         self.hands = self.mpHands.Hands(self.mode, self.maxHands, self.detectionCon, self.trackCon)
         self.mpDraw = mp.solutions.drawing_utils
@@ -20,9 +21,9 @@ class handDetector():
         self.results = self.hands.process(imgRGB)
 
         if self.results.multi_hand_landmarks:
-            for handLms in self.results.multi_hand_landmarks:
+            for handLm in self.results.multi_hand_landmarks:
                 if draw:
-                    self.mpDraw.draw_landmarks(img, handLms, self.mpHands.HAND_CONNECTIONS)
+                    self.mpDraw.draw_landmarks(img, handLm, self.mpHands.HAND_CONNECTIONS)
         return img
 
     def findPosition(self, img, handNo=0, draw=True):
@@ -39,29 +40,4 @@ class handDetector():
         return lmlist
 
 
-def main():
-    pTime = 0
-    cTime = 0
-    cap = cv2.VideoCapture(1)
-    detector = handDetector()
 
-    while True:
-        success, img = cap.read()
-        img = detector.findHands(img)
-
-        lmlist=detector.findPosition(img)
-        if len(lmlist)!=0:
-            print(lmlist[4])
-
-        # fps
-        cTime = time.time()
-        fps = 1 / (cTime - pTime)
-        pTime = cTime
-        cv2.putText(img, str(int(fps)), (10, 70), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 255), 3)
-
-        cv2.imshow("image", img)
-        cv2.waitKey(1)
-
-
-if __name__ == "__main__":
-    main()
